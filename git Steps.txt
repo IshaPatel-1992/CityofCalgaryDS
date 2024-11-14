@@ -1,0 +1,31 @@
+Pull updated/merged files in local machine
+
+>>Got to Project folder visual Studio
+>>git branch
+>>git switch main
+>>git pull
+>>cd backend
+>>npm install
+>>npm start
+
+Keep open existing terminal where database already running
+Open another terminal
+>>cd frontend
+>>npm install
+>>npm run dev
+
+Switch to own branch to work in local
+>>git branch [to check what are the branches you have to switch]
+>>git switch isha_project2_InceptionU
+>>git pull
+>>git rebase main
+16392@LAPTOP-7H9V7T36 MINGW64 ~/OneDrive/Desktop/Isha/InceptionU/Week6-11/FS13-proj2-commCrime (isha_project2_InceptionU)
+
+
+Notes: 
+Backend API group by Months & Year Bar Chart also update pie chart
+
+
+
+
+
