@@ -10,6 +10,7 @@ const LegendComponent = () => {
         borderRadius: "5px",
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         display: "flex",
+        flexDirection: "row",
         flexWrap: "wrap",
         gap: "10px", // Adds spacing between items
       }}
@@ -26,8 +27,8 @@ const LegendComponent = () => {
         >
           <div
             style={{
-              width: "20px",
-              height: "20px",
+              width: "40px",
+              height: "10px",
               backgroundColor: item.color,
               marginRight: "5px",
               border: "1px solid #000",

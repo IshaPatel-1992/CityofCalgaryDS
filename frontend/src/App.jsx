@@ -6,6 +6,7 @@ import EmergencyServicesComponent from './components/EmergencyServicesComponent'
 import NewsFeedComponent from './components/NewsFeedComponent';
 import TwitterFeedComponent from './components/TwitterFeedComponent';
 import './App.css';
+import BodyComponent from './components/BodyComponent';
 
 
 function App() {
@@ -13,11 +14,9 @@ function App() {
   return (
     <div className="App">
       <HeaderComponent />
+      <BodyComponent />
       <MapComponent />
-      <BarChartComponent />
-      <EmergencyServicesComponent />
       <NewsFeedComponent />
-      <TwitterFeedComponent />
     </div>
   );
 }

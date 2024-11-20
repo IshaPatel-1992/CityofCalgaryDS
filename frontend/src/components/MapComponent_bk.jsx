@@ -2,83 +2,23 @@ import React, { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { getUniqueID } from "../utils/utils";
+import BarChartComponent from "./BarChartComponent";
+import PieChartComponent from "./PieChartComponent";
 import LegendComponent from "./LegendComponent";
 import { getCrimeRateColor } from "../utils/utils";
-import Dashboard from "./Dashboard";
-import { sleep } from "../utils/utils";
+// import fetch from 'node-fetch';
 
 const MapComponent = () => {
   const mapContainer = useRef(null);
   const [loading, setLoading] = useState(true);
   const [details, setDetails] = useState(null);
-  const dashboardRef = useRef(null);
-  const dashboardSectionRef = useRef(null);
-  const [shouldScroll, setShouldScroll] = useState(false);
-  const [isObservered, setIsObserver] = useState(false);
-
-  useEffect(() => {
-    if (shouldScroll && dashboardSectionRef.current) {
-      // Create a MutationObserver to watch changes in the DOM
-      if(isObservered) {
-        const dashboardElement = dashboardSectionRef.current;
-        const dashboardHeight = dashboardElement.offsetHeight;
-        const viewportHeight = window.innerHeight;
-        const scrollPosition =
-          dashboardElement.getBoundingClientRect().top +
-          window.scrollY -
-          (viewportHeight - dashboardHeight);
-
-        window.scrollTo({
-          top: scrollPosition,
-          behavior: "smooth",
-        });
-
-        setShouldScroll(false);
-      }else {
-        const observer = new MutationObserver(() => {
-          if (dashboardSectionRef.current) {
-            const dashboardElement = dashboardSectionRef.current;
-            const dashboardHeight = dashboardElement.offsetHeight;
-            const viewportHeight = window.innerHeight;
-            const scrollPosition =
-              dashboardElement.getBoundingClientRect().top +
-              window.scrollY -
-              (viewportHeight - dashboardHeight);
-  
-            window.scrollTo({
-              top: scrollPosition,
-              behavior: "smooth",
-            });
-  
-            setShouldScroll(false);
-            setIsObserver(true);
-          }
-        });
-  
-        // Start observing the Dashboard section for changes (like rendering or height updates)
-        observer.observe(dashboardSectionRef.current, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-        });
-  
-        // Clean up observer on unmount
-        return () => {
-          if (observer) {
-            observer.disconnect();
-          }
-        };
-      }
-
-    }
-  }, [shouldScroll]);
 
   useEffect(() => {
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: "https://tiles.openfreemap.org/styles/liberty", // OpenFreeMap tiles
       center: [-114.0719, 51.0447],
-      zoom: 11,
+      zoom: 12,
     });
 
     let popup;
@@ -134,7 +74,7 @@ const MapComponent = () => {
               layout: {},
               paint: {
                 "fill-color": fillColor,
-                "fill-opacity": 0.6, // Set opacity
+                "fill-opacity": 0.5, // Set opacity
               },
             });
 
@@ -145,7 +85,7 @@ const MapComponent = () => {
               source: uniqueID,
               layout: {},
               paint: {
-                "line-color": "#911b14", // Black outline for contrast
+                "line-color": "#000", // Black outline for contrast
                 "line-width": 2, // Thicker outline
               },
             });
@@ -176,6 +116,7 @@ const MapComponent = () => {
             //   },
             // });
 
+            //       // // Add hover event
             map.on("mouseenter", uniqueID, (e) => {
               map.getCanvas().style.cursor = "pointer";
               const coordinates = e.lngLat;
@@ -213,14 +154,7 @@ const MapComponent = () => {
               setDetails({
                 name: properties.communityName,
                 crimeRate: properties.crimeRate,
-                year: null,
               });
-
-              // if (dashboardRef.current) {
-              //   dashboardRef.current.resetSeletecYear();
-              // }
-              dashboardRef.current?.resetSeletecYear();
-              setShouldScroll(true);
             });
           });
         })
@@ -245,14 +179,34 @@ const MapComponent = () => {
           alignItems: "flex-start",
         }}
       >
-        <div ref={mapContainer} style={{ width: "70%", height: "400px" }} />
+        <div ref={mapContainer} style={{ width: "70%", height: "600px" }} />
       </div>
       <LegendComponent
-        style={{ width: "30%", padding: "10px", marginLeft: "10px" }}
-      />      
+          style={{ width: "30%", padding: "10px", marginLeft: "10px" }}
+        />
       {details && (
-        <div ref={dashboardSectionRef}>
-          <Dashboard ref={dashboardRef} communityName={details.name} />
+        <div
+          id="detailsDiv"
+          style={{
+            marginTop: "10px",
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+            display: "flex",
+            width: "100%",
+            height: "500px",
+            flexDirection: "row", // Ensures the layout is horizontal
+            justifyItems: "center",
+            alignItems: "center",
+            gap: "25px",
+          }}
+        >
+          <div style={{ width: "100%" }}>
+            <BarChartComponent communityName={details.name} />
+          </div>
+          <div style={{ width: "100%" }}>
+            <PieChartComponent communityName={details.name} />
+          </div>
         </div>
       )}
     </div>

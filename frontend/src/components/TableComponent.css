@@ -1,0 +1,52 @@
+/* Wrapper for each table to control size */
+.table-wrapper {
+    flex: 1; /* Ensures equal width for side-by-side layout */
+    height: 400px; /* Fixed height for uniform table size */
+    display: flex;
+    flex-direction: column; /* Allow table to grow within container */
+    /* border: 1px solid #ccc; 
+    border-radius: 5px;  */
+    overflow: hidden; /* Prevents content from overflowing the wrapper */
+}
+
+/* Table container for scrollable content */
+.table-container {
+    flex: 1; /* Ensures table takes up the entire height of its wrapper */
+    overflow-y: auto; /* Vertical scroll if needed */
+    display: block; /* Ensures proper scrolling behavior */
+    font-size: small;
+}
+
+/* Table styles */
+.styled-table {
+    width: 100%; /* Full width of the container */
+    table-layout: fixed; /* Ensures consistent column sizes */
+    border-collapse: collapse;
+}
+
+.styled-table thead tr {
+    background-color: rgb(106, 23, 23);/*#009879;*/
+    color: #ffffff;
+    text-align: left;
+    position: sticky; /* Keeps header visible during scroll */
+    top: 0;
+    z-index: 1; /* Ensures header stays above scrolling content */
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden; /* Hide overflowing content */
+    text-overflow: ellipsis; /* Add ellipsis for long content */
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+    /* border-bottom: 2px solid #009879; */
+}

@@ -9,85 +9,105 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import {
+  CRIMEDATA_END_POINT,
+  GROUP_BY_YEAR,
+  GROUP_BY_MOUNTH,
+} from "../utils/APIConstants.js";
+import TableComponent from "./TableComponent.jsx";
+import './TableComponent.css';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const BarChartComponent = ({ communityName }) => {
+const searchByCommunityAPI = CRIMEDATA_END_POINT + GROUP_BY_YEAR;
+const searchByCommunityAndYearAPI = CRIMEDATA_END_POINT + GROUP_BY_MOUNTH;
+
+const BarChartComponent = ({ communityName, selectedYear, onYearClick, viewMode = 'chart' }) => {
   const [chartData, setChartData] = useState(null);
-  const [viewMode, setViewMode] = useState("chart"); // State to control the view mode (chart or table)
-  const [selectedYear, setSelectedYear] = useState(null); // State for the selected year
-  const [monthlyData, setMonthlyData] = useState(null); // State for monthly data based on selected year
+  const [xaxisText, setXaxisText] = useState("Year");
 
   useEffect(() => {
-    if (communityName) {
-      fetch(`/api/crimedata/byYear?community=${encodeURIComponent(communityName)}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Error while getting crimedata grouped by year ");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          const years = data.map((entry) => entry._id);
-          const counts = data.map((entry) => entry.totalCrimeCount);
-
-          setChartData({
-            labels: years,
-            datasets: [
-              {
-                label: "Crime Count by Year",
-                data: counts,
-                backgroundColor: "rgba(75, 192, 192, 0.6)",
-                borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 1,
-              },
-            ],
-            rawData: data, // Store raw data for table view
-          });
-        })
-        .catch((error) => console.error("Error fetching bar chart data:", error));
+    let endpointAPI, chartLabel;
+    if (communityName && selectedYear) {
+      endpointAPI =
+        searchByCommunityAndYearAPI +
+        "?community=" +
+        encodeURIComponent(communityName) +
+        "&year=" +
+        selectedYear;
+      chartLabel = "Crime Count by Month";
+      setXaxisText("Month");
+    } else if (communityName) {
+      endpointAPI =
+        searchByCommunityAPI +
+        "?community=" +
+        encodeURIComponent(communityName);
+      chartLabel = "Crime Count by Year";
+      setXaxisText("Year");
     }
-  }, [communityName]);
 
-  return (
+    fetch(endpointAPI)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            "Error while getting crimedata by endpoint api:" + endpointAPI
+          );
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const ids = data.map((entry) => entry._id); //entry._id is Year: search by community, Month: search by commnity and year
+        const counts = data.map((entry) => entry.totalCrimeCount);
+
+        setChartData({
+          labels: ids,
+          datasets: [
+            {
+              label: chartLabel,
+              data: counts,
+              backgroundColor: "rgba(75, 192, 192, 0.6)",
+              borderColor: "rgba(75, 192, 192, 1)",
+              borderWidth: 1,
+            },
+          ],
+          rawData: data, // Store raw data for table view
+        });
+      })
+      .catch((error) => console.error("Error fetching bar chart data:", error));
+  }, [communityName, selectedYear]);
+
+  const handleBarClick = (event, chart) => {
+    if (chart.length > 0) {
+      const yearIndex = chart[0].index;
+      const clickedYear = chartData.labels[yearIndex];
+      onYearClick(clickedYear); // Notify the parent component
+    }
+  };
+
+  return  chartData && (
     <div>
-      {communityName && <h3>Community: {communityName}</h3>}
-
-      {/* Buttons to switch between chart and table view */}
-      <div style={{ marginBottom: "10px" }}>
-        <button onClick={() => setViewMode("chart")}>View Chart</button>
-        <button onClick={() => setViewMode("table")}>View Table</button>
-      </div>
 
       {/* Conditionally render chart or table based on viewMode */}
-      {viewMode === "chart" && chartData ? (
+      {viewMode === "chart" ? (
         <Bar
           data={chartData}
           options={{
             responsive: true,
+            aspectRatio: 1.9,
             scales: {
-              x: { title: { display: true, text: "Year" } },
-              y: { title: { display: true, text: "Crime Count" }, beginAtZero: true },
+              x: { title: { display: true, text: xaxisText } },
+              y: {
+                title: { display: true, text: "Crime Count" },
+                beginAtZero: true,
+              },
             },
+            onClick: handleBarClick,
           }}
         />
-      ) : viewMode === "table" && chartData ? (
-        <table border="1" cellPadding="8" style={{ width: "100%", marginTop: "10px" }}>
-          <thead>
-            <tr>
-              <th>Year</th>
-              <th>Crime Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            {chartData.rawData.map((entry) => (
-              <tr key={entry._id}>
-                <td>{entry._id}</td>
-                <td>{entry.totalCrimeCount}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      ) : viewMode === "table" ? (
+        <div className="table-wrapper">
+        <TableComponent data={chartData.rawData} xaxisText={xaxisText} />
+        </div>
       ) : (
         <p>Loading data...</p>
       )}

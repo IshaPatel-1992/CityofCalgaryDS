@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import CrimeDataModel from "../models/crimedata.model.js";
 
+
+//get crime data by community, group by year.
 export const getDataGroupedByYear = async (community) => {
   try {
     const result = await CrimeDataModel.aggregate([
@@ -21,6 +23,7 @@ export const getDataGroupedByYear = async (community) => {
   }
 };
 
+//get crime data by community, group by crime type.
 export const getDataGroupedByCategory = async (community) => {
   try {
     const result = await CrimeDataModel.aggregate([
@@ -40,6 +43,98 @@ export const getDataGroupedByCategory = async (community) => {
     throw error;
   }
 };
+
+//get crime data by community and year, group by crime type.
+export const getYearlyDataGroupedByCategory = async (community, year) => {
+  try {
+    const result = await CrimeDataModel.aggregate([
+      { $match: { community: community, year: parseInt(year) } },
+      {
+        $group: {
+          _id: "$category",
+          totalCrimeCount: { $sum: "$crime_count" },
+        },
+      },
+      { $sort: { totalCrimeCount: -1 } },
+    ]);
+
+    return result;
+  } catch (error) {
+    console.error("Error fetching crime data grouped by category:", error);
+    throw error;
+  }
+};
+
+//get crime data by community and year, group by month
+export const getDataByCommunityAndYear = async (community, year) => {
+  try {
+    const months = Array.from({ length: 12 }, (_, i) => i + 1);
+
+    const result = await CrimeDataModel.aggregate([
+      { $match: { community: community, year: parseInt(year) }},
+      {
+        $group: {
+          _id: "$month",
+          totalCrimeCount: { $sum: "$crime_count" },
+        },
+      },
+      {
+        $addFields: {
+          numericId: {$toInt: "$_id"}
+        }
+      },
+      {
+        $facet: {
+          actualData: [{ $project: { _id: 1, totalCrimeCount: 1, numericId: 1 } }],
+          allMonths: [
+            {
+              $project: {
+                _id: 0,
+                data: {
+                  $map: {
+                    input: months,
+                    as: "month",
+                    in: {
+                      _id: { $toString: "$$month" },
+                      totalCrimeCount: 0,
+                      numericId: "$$month",
+                    },
+                  },
+                },
+              },
+            },
+            { $unwind: "$data" },
+            { $replaceRoot: { newRoot: "$data" } },
+          ]
+        }
+      },
+      {
+        $project: {
+          combined: {
+            $concatArrays: ["$actualData", "$allMonths"],
+          },
+        },
+      },
+      { $unwind: "$combined"},
+      {
+        $replaceRoot: { newRoot: "$combined"}
+      },
+      {
+        $group: {
+          _id: "$_id",
+          totalCrimeCount: { $max: "$totalCrimeCount" }, // Pick the actual value when it exists
+          numericId: { $first: "$numericId" },
+        },
+      },
+      { $sort: { numericId: 1 } },
+    ]);
+
+    return result;
+  } catch (error) {
+    console.error("Error fetching data by getDataByCommunityAndYear:", error);
+    throw error;
+  }
+}
 
 /* Created by Isha starts */
 /* CCS-28 Get Crime data group by crime type with Parameters Year & Community Name*/

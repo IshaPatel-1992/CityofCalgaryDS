@@ -12,5 +12,7 @@ export const dataCategory = Object.freeze (
 export const boundaryDataJsonURL = "https://data.calgary.ca/resource/surr-xmvs.json";
 export const boundaryDataCSVURL = "https://data.calgary.ca/resource/surr-xmvs.csv";
 export const boundaryDataGeoURL = "https://data.calgary.ca/resource/surr-xmvs.geojson";
-export const crimeDataSchedule = '5 0 28 * *';
+
+/* The task will run at 12:05 AM on the 28th of every month. */
+export const crimeDataSchedule = '5 0 28 * *'; 
 export const boundaryDataSchedule = '0 0 28 * *';

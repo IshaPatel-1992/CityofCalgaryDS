@@ -26,3 +26,5 @@ export const getUniqueID = (item) => {
     }
     return defaultColor;
   };
+
+  export const sleep = ms => new Promise(r => setTimeout(r, ms));

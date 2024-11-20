@@ -18,6 +18,22 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+.App {
+  display: flex;
+  flex-direction: column; /* Stack components vertically */
+  padding: 20px; /* Optional: Add padding around the entire app */
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc; 
+  border-radius: 10px; 
+}
+
+.App > * {
+  flex: 1; /* This makes each child component have the same width */
+  box-sizing: border-box; /* Ensures padding doesn't overflow the width */
+}
+
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
