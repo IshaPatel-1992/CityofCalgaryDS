@@ -1,0 +1,26 @@
+footer {
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: rgb(106, 23, 23);;
+    font-size: 14px;
+    font-weight: 100;
+    color: #FFFFFF;
+    border-top: 1px solid #ddd; /* Optional: Add a subtle border */
+}
+
+footer p {
+    margin: 5px 0; /* Add spacing between paragraphs */
+}
+
+footer a {
+    color: #007bff;
+    text-decoration: none;
+    margin: 0 5px;
+    transition: color 0.3s ease; /* Smooth hover effect */
+}
+
+footer a:hover {
+    color: #0056b3; /* Darker shade on hover */
+}
+
