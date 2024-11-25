@@ -1,36 +1,36 @@
 /* Wrapper for each table to control size */
 .table-wrapper {
-    flex: 1; /* Ensures equal width for side-by-side layout */
-    height: 400px; /* Fixed height for uniform table size */
+    flex: 1;
+    height: 400px; /* Default height for tables */
     display: flex;
-    flex-direction: column; /* Allow table to grow within container */
-    /* border: 1px solid #ccc; 
-    border-radius: 5px;  */
-    overflow: hidden; /* Prevents content from overflowing the wrapper */
+    flex-direction: column;
+    overflow: hidden;
+    padding: 10px;
 }
 
 /* Table container for scrollable content */
 .table-container {
-    flex: 1; /* Ensures table takes up the entire height of its wrapper */
-    overflow-y: auto; /* Vertical scroll if needed */
-    display: block; /* Ensures proper scrolling behavior */
-    font-size: small;
+    flex: 1;
+    overflow-y: auto; /* Scrollable content for larger tables */
+    display: block;
+    font-size: 1em;
+    width: 100%;
 }
 
 /* Table styles */
 .styled-table {
-    width: 100%; /* Full width of the container */
-    table-layout: fixed; /* Ensures consistent column sizes */
+    width: 100%;
+    table-layout: fixed; /* Ensure consistent column sizing */
     border-collapse: collapse;
 }
 
 .styled-table thead tr {
-    background-color: rgb(106, 23, 23);/*#009879;*/
+    background-color: rgb(106, 23, 23);
     color: #ffffff;
     text-align: left;
-    position: sticky; /* Keeps header visible during scroll */
+    position: sticky;
     top: 0;
-    z-index: 1; /* Ensures header stays above scrolling content */
+    z-index: 1;
 }
 
 .styled-table th,
@@ -38,15 +38,51 @@
     padding: 12px 15px;
     text-align: left;
     border: 1px solid #ddd;
-    white-space: nowrap; /* Prevent text wrapping */
-    overflow: hidden; /* Hide overflowing content */
-    text-overflow: ellipsis; /* Add ellipsis for long content */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+
+.styled-table th:first-child,
+.styled-table td:first-child {
+    width: 60%;
+}
+
+.styled-table th:not(:first-child),
+.styled-table td:not(:first-child) {
+    width: calc(40% / var(--remaining-cols, 1));
+}
+
+/* Alternate row styling */
 .styled-table tbody tr:nth-of-type(even) {
     background-color: #f3f3f3;
 }
 
-.styled-table tbody tr:last-of-type {
-    /* border-bottom: 2px solid #009879; */
+/* Equal table heights for smaller screens */
+@media (max-width: 768px) {
+    .table-wrapper {
+        height: auto; /* Allow adaptive height */
+        max-height: 400px; /* Uniform max height for all tables */
+        overflow: hidden;
+    }
+
+    .table-container {
+        height: 100%; /* Match parent wrapper height */
+        overflow-y: auto; /* Add vertical scrolling for larger content */
+    }
+}
+
+/* Compact design for very small screens */
+@media (max-width: 480px) {
+    .table-wrapper {
+        height: auto; /* Adaptive height for all tables */
+        max-height: 300px; /* Reduce maximum height for smaller screens */
+    }
+
+    .table-container {
+        height: 100%;
+        font-size: 0.8em; /* Reduce font size for better fit */
+        overflow-y: auto;
+    }
 }

@@ -49,3 +49,14 @@ textarea:focus {
     border-color: #6A1717;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
+
+.error {
+    color: red; /* Red font color for error */
+    font-size: 16px; /* Same font size as input fields */
+    margin-top: 5px; /* Small space above the error message */
+    font-weight: bold; /* Makes the error message bold */
+    width: 100%; /* Same width as the input fields */
+    padding: 10px; /* Padding like the input fields */
+    background-color: #f9f9f9; /* Light background like input fields */
+}
+

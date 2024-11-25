@@ -1,9 +1,15 @@
 import combineCrimeBoundaryModel from "../models/combineCrimeBoundary.model.js";
 
-export const getCrimeDataGroupedByCommunity = async () => {
+export const getCrimeDataGroupedByCommunity = async (year) => {
   try {
     console.log("start>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    const result = await combineCrimeBoundaryModel.aggregate([
+    const pipeline = [];
+
+    if (year) {
+      pipeline.push({ $match: { year: parseInt(year) } });
+    }
+
+    pipeline.push(
       {
         $group: {
           _id: "$community",
@@ -18,8 +24,12 @@ export const getCrimeDataGroupedByCommunity = async () => {
           totalCrimeCount: 1,
           cityBoundaryData: 1,
         },
-      },
-    ]);
+      }
+    );
+
+    console.log(pipeline);
+
+    const result = await combineCrimeBoundaryModel.aggregate(pipeline);
     console.log("end>>>>>>>>>>>>>>>>>>>>>");
     return result;
   } catch (error) {

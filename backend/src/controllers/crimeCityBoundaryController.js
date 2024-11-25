@@ -2,7 +2,8 @@ import { getCrimeDataGroupedByCommunity } from "../services/crimeCityBoundarySer
 
 export const getCrimeData = async (req, res) => {
     try {
-      const data = await getCrimeDataGroupedByCommunity();
+      const year = req.query.year;
+      const data = await getCrimeDataGroupedByCommunity(year);
       res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ message: error.message });

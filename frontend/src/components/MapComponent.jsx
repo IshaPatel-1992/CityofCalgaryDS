@@ -1,67 +1,70 @@
 import React, { useEffect, useRef, useState } from "react";
+import Dashboard from "./Dashboard";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { getUniqueID } from "../utils/utils";
-import LegendComponent from "./LegendComponent";
 import { getCrimeRateColor } from "../utils/utils";
-import Dashboard from "./Dashboard";
-import { sleep } from "../utils/utils";
+import MapRightComponent from "./MapRightComponent";
+import { mapColorObjYearly } from "../utils/constants.js";
+import {
+  generateDynamicColorObj,
+  calculateYearsFrom2018,
+  getUniqueID,
+} from "../utils/utils";
+import './MapComponent.css';
+
+const handleMapColorUpdate = async (selectedYear, setMapColorObj) => {
+  if (selectedYear && selectedYear !== "All") {
+    // If a specific year is selected
+    setMapColorObj(mapColorObjYearly); // Assuming mapColorObjYearly is already defined elsewhere
+  } else {
+    // Otherwise, dynamically generate based on years
+    const years = calculateYearsFrom2018();
+    const dynamicColorObj = await generateDynamicColorObj(years); // Await the function if it is asynchronous
+    setMapColorObj(dynamicColorObj);
+  }
+};
 
 const MapComponent = () => {
   const mapContainer = useRef(null);
+  const mapRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [details, setDetails] = useState(null);
   const dashboardRef = useRef(null);
   const dashboardSectionRef = useRef(null);
   const [shouldScroll, setShouldScroll] = useState(false);
   const [isObservered, setIsObserver] = useState(false);
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [mapColorObj, setMapColorObj] = useState(null);
+  const [showDashboard, setShowDashboard] = useState(true);
 
+  const handleYearChange = (year) => {
+    setSelectedYear(year);
+    setShowDashboard(false); // Hide Dashboard on year change
+    setIsObserver(false);
+  };
+  
   useEffect(() => {
     if (shouldScroll && dashboardSectionRef.current) {
       // Create a MutationObserver to watch changes in the DOM
-      if(isObservered) {
-        const dashboardElement = dashboardSectionRef.current;
-        const dashboardHeight = dashboardElement.offsetHeight;
-        const viewportHeight = window.innerHeight;
-        const scrollPosition =
-          dashboardElement.getBoundingClientRect().top +
-          window.scrollY -
-          (viewportHeight - dashboardHeight);
-
-        window.scrollTo({
-          top: scrollPosition,
-          behavior: "smooth",
-        });
-
+      if (isObservered) {
+        calculateScroll(dashboardSectionRef);
         setShouldScroll(false);
-      }else {
+      } else {
         const observer = new MutationObserver(() => {
           if (dashboardSectionRef.current) {
-            const dashboardElement = dashboardSectionRef.current;
-            const dashboardHeight = dashboardElement.offsetHeight;
-            const viewportHeight = window.innerHeight;
-            const scrollPosition =
-              dashboardElement.getBoundingClientRect().top +
-              window.scrollY -
-              (viewportHeight - dashboardHeight);
-  
-            window.scrollTo({
-              top: scrollPosition,
-              behavior: "smooth",
-            });
-  
+            calculateScroll(dashboardSectionRef);
             setShouldScroll(false);
             setIsObserver(true);
           }
         });
-  
+
         // Start observing the Dashboard section for changes (like rendering or height updates)
         observer.observe(dashboardSectionRef.current, {
           childList: true,
           subtree: true,
           attributes: true,
         });
-  
+
         // Clean up observer on unmount
         return () => {
           if (observer) {
@@ -69,20 +72,61 @@ const MapComponent = () => {
           }
         };
       }
-
     }
   }, [shouldScroll]);
 
   useEffect(() => {
-    const map = new maplibregl.Map({
+    const updateMapColors = async () => {
+      await handleMapColorUpdate(selectedYear, setMapColorObj);
+    };
+  
+    updateMapColors();
+  }, [selectedYear]);
+
+  const calculateScroll = (dashboardSectionRef) => {
+    const dashboardElement = dashboardSectionRef.current;
+    const dashboardHeight = dashboardElement.offsetHeight;
+    const viewportHeight = window.innerHeight;
+    const scrollPosition =
+      dashboardElement.getBoundingClientRect().top +
+      window.scrollY -
+      (viewportHeight - dashboardHeight);
+
+    window.scrollTo({
+      top: scrollPosition,
+      behavior: "smooth",
+    });
+  };
+
+  useEffect(() => {
+    if (!mapColorObj || !mapContainer.current) {
+      return;
+    }
+
+    mapRef.current = new maplibregl.Map({
       container: mapContainer.current,
       style: "https://tiles.openfreemap.org/styles/liberty", // OpenFreeMap tiles
       center: [-114.0719, 51.0447],
       zoom: 11,
     });
 
-    let popup;
+    const map = mapRef.current;
+    const adjustZoom = () => {
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        map.setZoom(9); // Smaller screen, lower zoom
+      } else if (window.matchMedia("(max-width: 1024px)").matches) {
+        map.setZoom(10); // Medium screen, medium zoom
+      } else {
+        map.setZoom(11); // Larger screen, default zoom
+      }
+    };
 
+    const mediaQueryList = window.matchMedia("(max-width: 1024px)");
+    adjustZoom(); // Initial adjustment
+    const handleChange = () => adjustZoom();
+    mediaQueryList.addEventListener("change", handleChange);
+
+    let popup;
     map.on("load", () => {
       map.setStyle({
         ...map.getStyle(),
@@ -90,8 +134,43 @@ const MapComponent = () => {
       });
       map.addControl(new maplibregl.NavigationControl(), "top-right");
 
+      // Add a GeoJSON source for the highlighted area
+      map.addSource("highlighted-area", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [], // Initially empty
+        },
+      });
+
+      // Add a highlight layer for the clicked area
+      map.addLayer({
+        id: "highlighted-area-layer",
+        type: "fill",
+        source: "highlighted-area",
+        paint: {
+          "fill-color": "#800000", // Highlight color
+          "fill-opacity": 0.8,
+        },
+      });
+
+      // Optionally, add a border/outline for the highlight
+      map.addLayer({
+        id: "highlighted-area-outline",
+        type: "line",
+        source: "highlighted-area",
+        paint: {
+          "line-color": "#800000",
+          "line-width": 15,
+        },
+      });
+
       // Fetch community data
-      fetch("/api/crimeboundarydata")
+      let fetchAPI = "/api/crimeboundarydata";
+      if (selectedYear) {
+        fetchAPI += "?year=" + selectedYear;
+      }
+      fetch(fetchAPI)
         .then((response) => response.json())
         .then((data) => {
           data.forEach((item) => {
@@ -108,7 +187,7 @@ const MapComponent = () => {
 
             const crimeRate = item.totalCrimeCount;
             const communityName = item.cityBoundaryData.properties.name;
-            const fillColor = getCrimeRateColor(crimeRate);
+            const fillColor = getCrimeRateColor(crimeRate, mapColorObj);
 
             map.addSource(uniqueID, {
               type: "geojson",
@@ -209,18 +288,34 @@ const MapComponent = () => {
 
             map.on("click", uniqueID, (e) => {
               const properties = e.features[0].properties;
-
+              const clickedCommunity = properties.communityName;
+              // setSelectedCommunity(clickedCommunity);
               setDetails({
-                name: properties.communityName,
+                name: clickedCommunity,
                 crimeRate: properties.crimeRate,
                 year: null,
               });
 
-              // if (dashboardRef.current) {
-              //   dashboardRef.current.resetSeletecYear();
-              // }
-              dashboardRef.current?.resetSeletecYear();
+              if(selectedYear){
+                dashboardRef.current?.setSelectedYearByInheritedValue(selectedYear);
+              } else {
+                dashboardRef.current?.resetSeletecYear();
+              }
+
+              setShowDashboard(true);
+
               setShouldScroll(true);
+              // Highlight the clicked area
+              const geometry = e.features[0].geometry;
+              map.getSource("highlighted-area").setData({
+                type: "FeatureCollection",
+                features: [
+                  {
+                    type: "Feature",
+                    geometry: geometry,
+                  },
+                ],
+              });
             });
           });
         })
@@ -231,31 +326,43 @@ const MapComponent = () => {
         });
     });
 
-    return () => map.remove();
-  }, []);
+    return () => {
+      mediaQueryList.removeEventListener("change", handleChange);
+      if (map) {
+        map.remove();
+      }
+    };
+  }, [mapColorObj, selectedYear]);
 
   return (
-    <div>
+    
+    <>
       {loading && <div>Loading map data...</div>}
-      <div
-        ref={mapContainer}
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "flex-start",
-        }}
+      <div className="map-container"
+        // style={{
+        //   display: "flex", // Flexbox layout for horizontal alignment
+        //   flexDirection: "row", // Row direction to place children side by side
+        //   alignItems: "flex-start", // Align items to the top
+        //   flexWrap: "wrap"
+        // }}
       >
-        <div ref={mapContainer} style={{ width: "70%", height: "400px" }} />
+        <div
+          ref={mapContainer}
+          className="map-pane"
+        />
+        <div className="right-pane">
+          <MapRightComponent
+            setSelectedYear={handleYearChange}
+            mapColorObj={mapColorObj}
+          />
+        </div>
       </div>
-      <LegendComponent
-        style={{ width: "30%", padding: "10px", marginLeft: "10px" }}
-      />      
       {details && (
         <div ref={dashboardSectionRef}>
-          <Dashboard ref={dashboardRef} communityName={details.name} />
+          <Dashboard ref={dashboardRef} communityName={details.name} showDashboard={showDashboard} dropDownSelectedYear={selectedYear}/>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

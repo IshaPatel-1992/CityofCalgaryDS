@@ -9,7 +9,7 @@ const HeaderComponent = () => {
       <a className='menu-item' href="/">Home</a>     
       <a className='menu-item' href="/">About</a>
       <a className='menu-item' href="/">Map</a>
-      <a className='menu-item' href="/frontend/src/components/ContactUsComponent.jsx">Contact</a>
+      <a className='menu-item' href="/">Contact</a>
       </nav>      
     </header>
   );

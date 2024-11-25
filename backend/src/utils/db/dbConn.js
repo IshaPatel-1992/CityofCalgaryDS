@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
-const MONGO_URI = process.env.MONGODBURL || "mongodb://localhost:27017/calgaryOpensourceData";
-
+const MONGO_URI = process.env.MONGODBURL;
+//console.log("DBconn file: " + MONGO_URI);
 let connection = null;
 
 export async function connectToDatabase() {

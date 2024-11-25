@@ -1,10 +1,9 @@
-import "./config/envLoader.js";
+import "./src/config/envLoader.js";
 import express from "express";
-import showRequests from "./utils/showRequests.js";
-import "./cronjob/index.js";
-import routes from "./routes/index.js";
-import { connectToDatabase } from "./utils/db/dbConn.js";
-
+import showRequests from "./src/utils/showRequests.js";
+import "./src/cronjob/index.js";
+import routes from "./src/routes/index.js";
+import { connectToDatabase } from "./src/utils/db/dbConn.js";
 
 
 

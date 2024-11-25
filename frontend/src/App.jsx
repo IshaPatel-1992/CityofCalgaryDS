@@ -7,8 +7,8 @@ import NewsFeedComponent from './components/NewsFeedComponent';
 import TwitterFeedComponent from './components/TwitterFeedComponent';
 import './App.css';
 import BodyComponent from './components/BodyComponent';
-import ContactUsComponent from './components/ContactUsComponent';
-import FooterComponent from './components/FooterComponent.jsx'
+import ContactUsComponent from './components/ContactUsComponent'
+
 
 function App() {
 
@@ -19,7 +19,6 @@ function App() {
       <MapComponent />
       <NewsFeedComponent />
       <ContactUsComponent />
-      <FooterComponent />
     </div>
   );
 }

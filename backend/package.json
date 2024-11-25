@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "echo no build step today!",
-    "start:server": "cd src && nodemon server.js",
+    "start:server": "nodemon server.js",
     "start": "npm run start:server"
   },
   "author": "",
@@ -23,5 +23,8 @@
     "nodemon": "^3.1.7",
     "wkt": "^0.1.1"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "dotenv-cli": "^7.4.4"
+  }
 }

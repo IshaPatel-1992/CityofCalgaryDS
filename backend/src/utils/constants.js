@@ -14,5 +14,5 @@ export const boundaryDataCSVURL = "https://data.calgary.ca/resource/surr-xmvs.cs
 export const boundaryDataGeoURL = "https://data.calgary.ca/resource/surr-xmvs.geojson";
 
 /* The task will run at 12:05 AM on the 28th of every month. */
-export const crimeDataSchedule = '5 0 28 * *'; 
-export const boundaryDataSchedule = '0 0 28 * *';
+export const crimeDataSchedule = '33 10 * * *'; 
+export const boundaryDataSchedule = '32 10 * * *';
