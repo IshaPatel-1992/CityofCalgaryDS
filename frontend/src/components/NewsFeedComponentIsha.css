@@ -1,0 +1,85 @@
+#scroll-container {
+    max-width: 600px;
+    height: 100px; /* Set the height to enable scrolling when content overflows */
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Enables vertical scrolling */
+    scrollbar-width: thin; /* For Firefox: sets the width of the scrollbar */
+    scrollbar-color: #888 #f9f9f9; /* For Firefox: sets the colors of the thumb and track */
+  }
+  
+  #scroll-container::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+  }
+  
+  #scroll-container::-webkit-scrollbar-thumb {
+    background-color: #888; /* Scrollbar thumb color */
+    border-radius: 4px; /* Rounded corners for the scrollbar thumb */
+  }
+  
+  #scroll-container::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Darker color on hover for thumb */
+  }
+  
+  #scroll-container::-webkit-scrollbar-track {
+    background-color: #f9f9f9; /* Scrollbar track color */
+    border-radius: 4px;
+  }
+  
+  .news-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .news-item h3 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .news-item p {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .news-item .pubdate {
+    font-size: 12px;
+    color: #999;
+    text-align: right;
+  }
+  
+  .news-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  p.loading {
+    text-align: center;
+    font-size: 16px;
+    color: #777;
+  }
+  
+  @media (max-width: 768px) {
+    #scroll-container {
+      padding: 15px;
+      height: 300px; /* Adjust height for smaller screens */
+    }
+  
+    .news-item h3 {
+      font-size: 16px;
+    }
+  
+    .news-item p {
+      font-size: 13px;
+    }
+  }
+  

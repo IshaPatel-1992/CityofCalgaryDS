@@ -8,6 +8,7 @@ import TwitterFeedComponent from './components/TwitterFeedComponent';
 import './App.css';
 import BodyComponent from './components/BodyComponent';
 import ContactUsComponent from './components/ContactUsComponent'
+import FooterComponent from './components/FooterComponent';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       <MapComponent />
       <NewsFeedComponent />
       <ContactUsComponent />
+      <FooterComponent />
     </div>
   );
 }
