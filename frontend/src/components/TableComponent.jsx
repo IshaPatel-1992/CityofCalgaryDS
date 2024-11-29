@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import './TableComponent.css';
+import '../App.css';
 
 const TableComponent = ({ data, xaxisText }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -37,7 +38,7 @@ const TableComponent = ({ data, xaxisText }) => {
   return (
     <div className="table-container">
     <table className="styled-table">
-      <thead>
+      <thead className="universal-color">
         <tr>
           <th onClick={ ()=> sortData("_id") }>{xaxisText} {getArrowIcon("_id")}</th>
           <th onClick={ ()=> sortData("totalCrimeCount")}>Crime Count {getArrowIcon("totalCrimeCount")}</th>

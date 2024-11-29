@@ -13,7 +13,7 @@
     flex: 1;
     overflow-y: auto; /* Scrollable content for larger tables */
     display: block;
-    font-size: 1em;
+    font-size: 0.9em;
     width: 100%;
 }
 
@@ -25,7 +25,6 @@
 }
 
 .styled-table thead tr {
-    background-color: rgb(106, 23, 23);
     color: #ffffff;
     text-align: left;
     position: sticky;

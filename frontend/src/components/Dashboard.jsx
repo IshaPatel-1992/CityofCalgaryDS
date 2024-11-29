@@ -37,10 +37,11 @@ const Dashboard = forwardRef(({ communityName, showDashboard, dropDownSelectedYe
     setSelectedYear(null);
   };
 
+
   return (
     <>
       {showDashboard && (
-        <div style={{ marginTop: "50px" }}>
+        <div  className="section-container">
           <div>
             {communityName && (
               <h3>

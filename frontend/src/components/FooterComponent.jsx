@@ -1,22 +1,22 @@
 import './FooterComponent.css';
+import '../App.css';
+
+import background from '../assets/img_calgary_landscape.svg';
 
 const FooterComponent = () => {
     return (
-        <div>
-            <footer>
-                <p>© 2024 Community Crime App. All rights reserved.</p>
-                { /* <p>Email: <a href="mailto:support@crimeapp.com">support@crimeapp.com</a> | Phone: <a href="tel:+11234567890">+1 (123) 456-7890</a></p>
-                <p>
-                    Follow us: 
-                    <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a> | 
-                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
-                </p>
-                <p>
-                    <a href="/privacy-policy">Privacy Policy</a> | 
-                    <a href="/terms-and-conditions">Terms & Conditions</a>
-                </p> */ }
+ <div className='section-container'>
+            <footer className="footer">
+                <div className="footer-image-wrapper">
+                    <img src={background} alt="Calgary Landscape" className="footer-image" />
+                </div>
+                <div className="footer-content universal-color">
+                    <p><center>© 2024 Smart Calgary. All rights reserved.</center></p>
+                </div>
             </footer>
         </div>
+          
+        
     );
 };
 

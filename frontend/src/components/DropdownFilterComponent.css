@@ -51,7 +51,7 @@
   }
 
   .year-select {
-    font-size: 12px; /* Adjust font size for smaller screens */
+    font-size: 8px; /* Adjust font size for smaller screens */
     padding: 6px; /* Reduce padding for a compact design */
   }
 }

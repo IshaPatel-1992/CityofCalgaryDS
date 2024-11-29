@@ -99,6 +99,7 @@ const MapComponent = () => {
   };
 
   useEffect(() => {
+    setLoading(true);
     if (!mapColorObj || !mapContainer.current) {
       return;
     }
@@ -338,7 +339,7 @@ const MapComponent = () => {
     
     <>
       {loading && <div>Loading map data...</div>}
-      <div className="map-container"
+      <div id="map" className="map-container"
         // style={{
         //   display: "flex", // Flexbox layout for horizontal alignment
         //   flexDirection: "row", // Row direction to place children side by side

@@ -28,7 +28,6 @@ textarea {
 button[type="submit"] {
     width: 100%; /* Full width */
     padding: 10px 20px;
-    background-color: #6A1717;
     color: white;
     border: none;
     border-radius: 5px;
